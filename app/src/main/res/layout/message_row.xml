@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/massage_row_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:orientation="vertical">
+    <TextView
+        android:id="@+id/massage_row_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/massage_row_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"/>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

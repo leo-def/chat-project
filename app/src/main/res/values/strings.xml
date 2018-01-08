@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">ChatProject</string>
+
+    <string name="label_google_sign_in">Firebase + Google Sign In</string>
+    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
+    <string name="google_status_fmt">Google User: %s</string>
+    <string name="google_title_text">Google Sign In</string>
+    <string name="signed_in">Signed In</string>
+    <string name="signed_out">Signed Out</string>
+    <string name="desc_firebase_lockup">Firebase logo and name</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign In</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="firebase_user_management">Firebase User Management</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="loading">Carregando…</string>
+    <string name="title_activity_new_conversation">NewConversationActivity</string>
+    <string name="title_activity_conversation">ConversationActivity</string>
+    <string name="conversation_activity_send_message_button">Enviar</string>
+</resources>
