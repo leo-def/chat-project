@@ -1,215 +1,168 @@
 # Chat Project - Technical Specification
 
-> Technical specification for the Android Chat Application.
-> Reference for understanding Kotlin, Firebase, and Android development patterns.
+> Android chat application with Firebase Realtime Database and Google authentication.
+> Demonstrates Android development with real-time messaging and social login.
 
 ## Executive Summary
 
-- **Project**: Chat Project
-- **Type**: Android Mobile Application
-- **Language**: Kotlin
-- **Platforms**: Android (Firebase backend)
-- **Status**: Active Development
-- **Owner**: Development team
+Chat Project is a **native Android application** built with Java/Kotlin using **Firebase Realtime Database** for real-time messaging and **Firebase Authentication + Google Sign-In**. It implements a multi-screen chat flow: login → dashboard (conversation list) → conversation view → new conversation creation.
 
 ---
 
 ## 1. Problem Statement
 
 ### Context
-Chat Project is an Android chat application built with Kotlin and Firebase Real-time Database. It provides messaging functionality with Firebase Authentication for user management and real-time synchronization.
+A real-time mobile chat application demonstrating Android development patterns, Firebase integration, and Google OAuth authentication.
 
 ### Goals
-- **Primary**: Deliver real-time chat functionality for Android users
-- **Secondary**: Implement Firebase Authentication and Database integration
-- **Tertiary**: Provide responsive, modern Android UI with Material Design
+- Implement secure user authentication via Google Sign-In + Firebase Auth
+- Provide real-time bidirectional messaging via Firebase Realtime Database
+- List conversations and messages in a clean Android UI
+- Demonstrate RecyclerView patterns with custom row layouts
 
 ### Success Metrics
-- [x] Kotlin-based development with modern syntax
-- [x] Firebase Real-time Database integration
-- [x] Firebase Authentication (email/password or OAuth)
-- [x] Material Design 3 compatibility
-- [x] Real-time message synchronization
-- [ ] Offline message caching
-- [ ] End-to-end encryption support
-- [ ] >95% test coverage
+- [x] Google Sign-In + Firebase Auth integration
+- [x] Firebase Realtime Database for messages
+- [x] 4 Activities (login, dashboard, conversation, new conversation)
+- [x] Custom RecyclerView row layouts
+- [ ] Push notifications (FCM)
+- [ ] Message read receipts
+- [ ] Offline support
 
 ---
 
 ## 2. Technology Stack
 
-| Component | Technology | Version | Rationale |
-|-----------|-----------|---------|-----------|
-| Language | Kotlin | 1.7+ | Modern, null-safe JVM language |
-| Platform | Android | 8.0 (API 26)+ | Mobile OS support |
-| Build Tool | Gradle | 7.0+ | Build automation and dependency management |
-| UI Framework | Android SDK + Material Design | 3.0 | Modern, responsive UI components |
-| Backend | Firebase | Latest | Real-time database, authentication, cloud storage |
-| Database | Firebase Real-time DB | Latest | NoSQL, real-time synchronization |
-| Authentication | Firebase Auth | Latest | Email, OAuth, anonymous auth |
-| Architecture | MVVM + LiveData | - | Reactive architecture pattern |
-| Testing | JUnit + Mockito | 5.x/4.x | Unit and integration tests |
-| UI Testing | Espresso + Compose | Latest | Automated UI testing |
-
-### Key Dependencies
-- `com.google.firebase:firebase-database`: Real-time database
-- `com.google.firebase:firebase-auth`: Authentication
-- `androidx.lifecycle:lifecycle-viewmodel`: MVVM pattern
-- `androidx.lifecycle:lifecycle-livedata`: Reactive data binding
-- `com.google.android.material:material`: Material Design components
-- `com.squareup.retrofit2:retrofit`: REST client (if needed)
+| Component | Technology | Version |
+|-----------|-----------|---------|
+| Platform | Android | Java/Kotlin |
+| Build | Gradle (Android) | Latest |
+| Authentication | Firebase Auth + Google Sign-In | Latest |
+| Database | Firebase Realtime Database | Latest |
+| UI | Android Views + RecyclerView | Latest |
+| Image Loading | (Firebase profile pictures) | - |
 
 ---
 
 ## 3. Architecture
 
-### High-Level Application Architecture
-
 ```
-┌─────────────────────────────────────────────────────────────┐
-│         Android UI Layer (Fragments/Activities)             │
-│      (Material Design, RecyclerView, EditText)              │
-└────────┬────────────────────────────────────────────────────┘
-         │
-┌────────▼─────────────────────────────────────────────────────┐
-│     ViewModel Layer (MVVM Pattern)                           │
-│  (State management, business logic orchestration)            │
-└────────┬────────────────────────────────────────────────────┘
-         │
-┌────────▼─────────────────────────────────────────────────────┐
-│     Repository Layer                                         │
-│  (Abstract data sources: Firebase, local cache)              │
-└────────┬────────────────────────────────────────────────────┘
-         │
-    ┌────┴─────────────────────────────────────────┐
-    │                                              │
-┌───▼──────────────────┐  ┌──────────────────────┐
-│  Firebase Layer      │  │  Local Storage       │
-├──────────────────────┤  ├──────────────────────┤
-│ - Authentication     │  │ - SharedPreferences  │
-│ - Real-time DB       │  │ - Room Database      │
-│ - Cloud Storage      │  │ - Cache              │
-│ - Cloud Messaging    │  │                      │
-└──────────────────────┘  └──────────────────────┘
-```
-
-### Message Flow for Chat
-
-```
-User Types Message
-    ↓
-UI (ChatFragment) captures input
-    ↓
-ViewModel processes and validates
-    ↓
-Repository pushes to Firebase
-    ↓
-Firebase Real-time DB (listener updates)
-    ↓
-ViewModel updates LiveData
-    ↓
-UI (RecyclerView) updates in real-time
+┌──────────────────────────────────────────────────┐
+│              Android Application                  │
+├──────────────────────────────────────────────────┤
+│  MainActivity          (Login screen)             │
+│  DashboardActivity     (Conversation list)        │
+│  ConversationActivity  (Chat view)                │
+│  NewConversationActivity (Start new chat)         │
+└──────────────────────┬───────────────────────────┘
+                       │ Firebase SDK
+           ┌───────────┴───────────┐
+           ▼                       ▼
+┌──────────────────┐    ┌──────────────────────┐
+│ Firebase Auth    │    │ Firebase Realtime DB │
+│ Google Sign-In   │    │ /conversations       │
+└──────────────────┘    │ /messages            │
+                        │ /users               │
+                        └──────────────────────┘
 ```
 
 ---
 
-## 4. Project Structure
+## 4. Screen / Activity Structure
 
-```
-app/
-├── manifests/
-│   └── AndroidManifest.xml
-├── java/com/example/chatapp/
-│   ├── ui/
-│   │   ├── fragments/
-│   │   │   ├── ChatListFragment.kt
-│   │   │   ├── ChatDetailFragment.kt
-│   │   │   └── AuthFragment.kt
-│   │   ├── activities/
-│   │   │   ├── MainActivity.kt
-│   │   │   └── LoginActivity.kt
-│   │   └── adapters/
-│   │       ├── MessageAdapter.kt
-│   │       └── ChatListAdapter.kt
-│   ├── viewmodel/
-│   │   ├── ChatViewModel.kt
-│   │   ├── AuthViewModel.kt
-│   │   └── UserViewModel.kt
-│   ├── repository/
-│   │   ├── ChatRepository.kt
-│   │   ├── AuthRepository.kt
-│   │   └── UserRepository.kt
-│   ├── model/
-│   │   ├── Message.kt
-│   │   ├── User.kt
-│   │   └── Chat.kt
-│   ├── util/
-│   │   ├── Constants.kt
-│   │   └── Extensions.kt
-│   └── App.kt
-├── res/
-│   ├── layout/        # XML layouts
-│   ├── values/        # Strings, colors, dimens
-│   ├── drawable/      # Images, icons
-│   └── menu/          # Menu resources
-└── test/
-    ├── java/          # Unit tests
-    └── androidTest/   # Instrumented tests
-```
+| Activity | Layout | Purpose |
+|----------|--------|---------|
+| `MainActivity` | `activity_main.xml` | Login with Google Sign-In button |
+| `DashboardActivity` | `activity_dashboard.xml` | List of conversations (`conversation_row.xml`) |
+| `ConversationActivity` | `activity_conversation.xml` | Real-time message view (`message_row.xml`) |
+| `NewConversationActivity` | `activity_new_conversation.xml` | Select user to start chat (`person_row.xml`) |
 
 ---
 
-## 5. Key Patterns & Architecture Decisions
+## 5. Data Structure (Firebase Realtime Database)
 
-### MVVM (Model-View-ViewModel) Pattern
-- **View** (Fragments/Activities): Display UI, capture user input
-- **ViewModel**: Hold state, process business logic, communicate with Repository
-- **Model** (LiveData/StateFlow): Observable data holders
-- **Repository**: Abstract data sources (Firebase, local)
-
-### Firebase Real-time DB Structure
 ```json
 {
-  "chats": {
-    "chatId": {
-      "name": "Group Chat",
-      "members": { "userId": true },
-      "createdAt": 1234567890,
-      "messages": {
-        "msgId": {
-          "text": "Hello",
-          "senderId": "userId",
-          "timestamp": 1234567890
-        }
-      }
+  "users": {
+    "uid1": { "name": "...", "email": "...", "photoUrl": "..." }
+  },
+  "conversations": {
+    "convId1": {
+      "participants": { "uid1": true, "uid2": true },
+      "lastMessage": "...",
+      "lastMessageAt": 1234567890
     }
   },
-  "users": {
-    "userId": {
-      "name": "John Doe",
-      "email": "john@example.com",
-      "avatar": "https://..."
+  "messages": {
+    "convId1": {
+      "msgId1": {
+        "senderId": "uid1",
+        "text": "Hello",
+        "timestamp": 1234567890
+      }
     }
   }
 }
 ```
 
-### Authentication Flow
-1. Anonymous login or email/password signup
-2. Firebase Auth token stored securely
-3. Token passed in requests to Firebase
-4. Automatic token refresh handling
-5. Logout clears token and local data
+---
+
+## 6. Authentication Flow
+
+```
+App launch
+    ↓
+Check FirebaseAuth.getCurrentUser()
+    ↓ null
+Show Google Sign-In button
+    ↓ user signs in
+GoogleSignInAccount → Firebase credential
+    ↓
+FirebaseAuth.signInWithCredential()
+    ↓ success
+Navigate to DashboardActivity
+```
 
 ---
 
-## 6. Key Features
+## 7. Testing Strategy
 
-- **Real-time Messaging**: Firebase listeners for instant updates
-- **User Authentication**: Email/password with Firebase Auth
-- **Group Chats**: Multiple users per chat room
-- **Message History**: Pagination for historical messages
-- **Typing Indicators**: Real-time presence detection
-- **Offline Support**: Local cache with sync on reconnection
-- **Push Notifications**: Firebase Cloud Messaging (FCM)
+No automated tests found. Manual testing only.
 
+```bash
+./gradlew connectedAndroidTest    # Instrumented tests (requires device/emulator)
+./gradlew test                    # Unit tests
+```
+
+---
+
+## 8. Deployment & Operations
+
+```bash
+./gradlew assembleDebug       # Build debug APK
+./gradlew assembleRelease     # Build release APK (requires signing config)
+```
+
+**Requirements:**
+- `google-services.json` in `app/` (Firebase project config — not committed)
+- Firebase project with Realtime Database and Auth enabled
+- Google Sign-In OAuth client configured in Firebase Console
+
+---
+
+## 9. Issues Found
+
+### Security
+- Firebase Realtime Database security rules must be configured. Default rules allow read/write to all authenticated users — conversation isolation (only participants can read/write) requires custom rules.
+- No input sanitization on message text — XSS-style payloads could be stored (Firebase stores raw strings).
+
+### Missing Features
+- No FCM push notifications — users must have the app open to receive messages.
+- No message deletion or editing.
+- No typing indicators.
+- No read receipts.
+- No pagination for message history (loading all messages at once will fail for long conversations).
+
+### Code Quality
+- `google-services.json` should be in `.gitignore` — if accidentally committed, Firebase API keys are exposed.
+- No error handling displayed to users for failed sign-in or network errors.
